@@ -46,79 +46,73 @@ class _CalendarPickerState extends State<CalendarPicker> {
     final month = _displayMonth.month;
     final daysInMonth = _daysInMonth(year, month);
     final firstCol = _firstWeekdayColumn(year, month);
-    final rowCount = ((firstCol + daysInMonth) / 7).ceil();
 
     return Dialog(
       backgroundColor: Colors.transparent,
       insetPadding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Container(
-            padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
-            decoration: BoxDecoration(
-              color: const Color(0xFFD6EAF8),
-              border: Border.all(color: const Color(0xFF2E4053), width: 6),
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0x1A000000),
-                  blurRadius: 6,
-                  offset: Offset(0, 4),
-                ),
-              ],
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
+        decoration: BoxDecoration(
+          color: const Color(0xFFD6EAF8),
+          border: Border.all(color: const Color(0xFF2E4053), width: 6),
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x1A000000),
+              blurRadius: 6,
+              offset: Offset(0, 4),
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildHeader(year, month),
-                const SizedBox(height: 20),
-                _buildWeekdayRow(),
-                const SizedBox(height: 8),
-                _buildDayGrid(year, month, firstCol, daysInMonth, rowCount),
-              ],
-            ),
-          ),
-          Positioned(
-            top: 8,
-            right: 8,
-            child: GestureDetector(
-              onTap: () => Navigator.of(context).pop(),
-              child: Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(
-                  Icons.close,
-                  color: Color(0xFF2E4053),
-                  size: 20,
-                ),
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildHeader(year, month),
+            const SizedBox(height: 20),
+            _buildWeekdayRow(),
+            const SizedBox(height: 8),
+            _buildDayGrid(year, month, firstCol, daysInMonth),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildHeader(int year, int month) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         _NavButton(onTap: _prevMonth, icon: Icons.chevron_left),
-        Text(
-          '$year년 $month월',
-          style: const TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.w900,
-            color: Color(0xFF2E4053),
-            letterSpacing: -1.1,
+        Expanded(
+          child: Center(
+            child: Text(
+              '$year년 $month월',
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w900,
+                color: Color(0xFF2E4053),
+                letterSpacing: -1.1,
+              ),
+            ),
           ),
         ),
         _NavButton(onTap: _nextMonth, icon: Icons.chevron_right),
+        const SizedBox(width: 8),
+        GestureDetector(
+          onTap: () => Navigator.of(context).pop(),
+          child: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.5),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: const Icon(
+              Icons.close,
+              color: Color(0xFF2E4053),
+              size: 22,
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -149,10 +143,10 @@ class _CalendarPickerState extends State<CalendarPicker> {
     int month,
     int firstCol,
     int daysInMonth,
-    int rowCount,
   ) {
+    const totalRows = 6;
     return Column(
-      children: List.generate(rowCount, (row) {
+      children: List.generate(totalRows, (row) {
         return Row(
           children: List.generate(7, (col) {
             final dayNumber = row * 7 + col - firstCol + 1;
