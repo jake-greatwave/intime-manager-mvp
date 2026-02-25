@@ -1,28 +1,28 @@
 import 'package:intime_manager/network/socket/socket_client.dart';
 
 abstract class BaseSocketService {
-  final SocketClient _socketClient = SocketClient();
-
   Future<T> execute<T>(Future<T> Function(SocketClient client) operation) async {
+    final client = SocketClient();
     try {
-      await _socketClient.connect();
-      final result = await operation(_socketClient);
+      await client.connect();
+      final result = await operation(client);
       return result;
     } catch (e) {
       rethrow;
     } finally {
-      await _socketClient.disconnect();
+      await client.disconnect();
     }
   }
 
   Future<void> executeVoid(Future<void> Function(SocketClient client) operation) async {
+    final client = SocketClient();
     try {
-      await _socketClient.connect();
-      await operation(_socketClient);
+      await client.connect();
+      await operation(client);
     } catch (e) {
       rethrow;
     } finally {
-      await _socketClient.disconnect();
+      await client.disconnect();
     }
   }
 }

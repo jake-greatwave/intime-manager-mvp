@@ -9,6 +9,8 @@ class SocketClient {
   StreamController<String>? _responseController;
   StreamSubscription<List<int>>? _subscription;
 
+  final StringBuffer _buffer = StringBuffer();
+
   bool get isConnected => _isConnected;
 
   StreamController<String> get _getOrCreateController {
@@ -16,6 +18,23 @@ class SocketClient {
       _responseController = StreamController<String>.broadcast();
     }
     return _responseController!;
+  }
+
+  void _onData(List<int> data) {
+    String chunk;
+    try {
+      chunk = utf8.decode(data, allowMalformed: false);
+    } catch (_) {
+      chunk = latin1.decode(data);
+    }
+    _buffer.write(chunk);
+
+    final raw = _buffer.toString();
+    try {
+      jsonDecode(raw);
+      _buffer.clear();
+      _getOrCreateController.add(raw);
+    } catch (_) {}
   }
 
   Future<void> connect() async {
@@ -29,17 +48,10 @@ class SocketClient {
         NetworkConfig.serverPort,
       );
       _isConnected = true;
+      _buffer.clear();
 
       _subscription = _socket!.listen(
-        (List<int> data) {
-          String message;
-          try {
-            message = utf8.decode(data, allowMalformed: false);
-          } catch (e) {
-            message = latin1.decode(data);
-          }
-          _getOrCreateController.add(message);
-        },
+        _onData,
         onError: (error) {
           _getOrCreateController.addError(error);
         },
@@ -69,6 +81,7 @@ class SocketClient {
     await _socket?.close();
     _socket = null;
     _isConnected = false;
+    _buffer.clear();
     if (_responseController != null && !_responseController!.isClosed) {
       await _responseController!.close();
     }

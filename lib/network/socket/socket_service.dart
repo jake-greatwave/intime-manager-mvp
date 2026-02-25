@@ -14,7 +14,7 @@ class TimeoutException implements Exception {
 class SocketService extends BaseSocketService {
   Future<Map<String, dynamic>> sendAndReceive({
     required SocketRequest request,
-    Duration timeout = const Duration(seconds: 30),
+    Duration timeout = const Duration(seconds: 10),
   }) async {
     return execute<Map<String, dynamic>>((client) async {
       final completer = Completer<Map<String, dynamic>>();
