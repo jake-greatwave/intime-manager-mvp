@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intime_manager/models/field_item.dart';
 import 'package:intime_manager/models/response/login_response.dart';
+import 'package:intime_manager/screens/field_main_screen.dart';
 import 'package:intime_manager/services/network/auth_service.dart';
 import 'package:intime_manager/services/preference_service.dart';
 import 'package:intime_manager/widgets/home/calendar_picker.dart';
@@ -90,12 +91,22 @@ class _HomeScreenState extends State<HomeScreen> {
             fieldCode: field.fieldCode,
             workDate: workDate,
           );
-          final count = response.empWorkingInfo
-              .where((e) => _hasWorkIn(e.workIn))
+          final list = response.empWorkingInfo;
+          final workerIn =
+              list.where((e) => _hasWorkIn(e.workIn)).length;
+          final notOut = list
+              .where((e) => _hasWorkIn(e.workIn) && !_hasWorkIn(e.workOut))
               .length;
+          final unassigned =
+              list.where((e) => e.deptID.trim().isEmpty).length;
           if (!mounted || id != _loadId) return;
           setState(() {
-            _fields[i] = field.copyWith(workerCount: count);
+            _fields[i] = field.copyWith(
+              workerCount: workerIn,
+              notOut: notOut,
+              unassigned: unassigned,
+              empList: list,
+            );
           });
         } catch (_) {}
       }),
@@ -124,6 +135,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _onStart() {
     if (_selectedIndex == null) return;
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => FieldMainScreen(
+          fieldItem: _fields[_selectedIndex!],
+          date: _selectedDate,
+        ),
+      ),
+    );
   }
 
   @override
