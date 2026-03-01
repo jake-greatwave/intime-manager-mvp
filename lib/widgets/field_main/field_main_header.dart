@@ -5,6 +5,7 @@ class FieldMainHeader extends StatelessWidget {
   final String fieldName;
   final DateTime date;
   final VoidCallback? onBack;
+  final VoidCallback? onDateTap;
 
   const FieldMainHeader({
     super.key,
@@ -12,6 +13,7 @@ class FieldMainHeader extends StatelessWidget {
     required this.fieldName,
     required this.date,
     this.onBack,
+    this.onDateTap,
   });
 
   String _dateLabel() {
@@ -50,19 +52,27 @@ class FieldMainHeader extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              const Icon(
-                Icons.calendar_today,
-                color: Color(0xFF00A63E),
-                size: 20,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                _dateLabel(),
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w900,
-                  color: Color(0xFF101828),
-                  letterSpacing: -0.45,
+              GestureDetector(
+                onTap: onDateTap,
+                behavior: HitTestBehavior.opaque,
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.calendar_today,
+                      color: Color(0xFF00A63E),
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      _dateLabel(),
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                        color: Color(0xFF101828),
+                        letterSpacing: -0.45,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
