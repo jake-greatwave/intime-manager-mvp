@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:intime_manager/models/emp_working_info.dart';
+import 'package:intime_manager/models/field_item.dart';
+import 'package:intime_manager/screens/emp_detail_screen.dart';
 import 'package:intime_manager/widgets/field_main/new_registrant_row.dart';
 
 class NewRegistrantTable extends StatelessWidget {
   final List<EmpWorkingInfo> items;
+  final FieldItem fieldItem;
   final String title;
   final String emptyMessage;
 
   const NewRegistrantTable({
     super.key,
     required this.items,
+    required this.fieldItem,
     this.title = '신규 등록자',
     this.emptyMessage = '데이터가 없습니다.',
   });
@@ -62,6 +66,14 @@ class NewRegistrantTable extends StatelessWidget {
                         deptName:
                             item.deptName.isEmpty ? '미배정' : item.deptName,
                         lastAuthLog: _formatDate(item.lastAuthLog),
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => EmpDetailScreen(
+                              emp: item,
+                              fieldItem: fieldItem,
+                            ),
+                          ),
+                        ),
                       );
                     },
                   ),

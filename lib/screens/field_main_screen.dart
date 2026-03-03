@@ -162,6 +162,7 @@ class _FieldMainScreenState extends State<FieldMainScreen> {
                           Expanded(
                             child: NewRegistrantTable(
                               items: _filteredList,
+                              fieldItem: _fieldItem,
                               title: _tableTitle,
                               emptyMessage: _emptyMessage,
                             ),

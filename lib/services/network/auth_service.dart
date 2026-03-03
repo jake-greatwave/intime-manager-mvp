@@ -4,9 +4,15 @@ import 'package:intime_manager/models/request/verify_request.dart';
 import 'package:intime_manager/models/request/login_request.dart';
 import 'package:intime_manager/models/request/reg_member_request.dart';
 import 'package:intime_manager/models/request/work_info_request.dart';
+import 'package:intime_manager/models/request/update_emp_info_request.dart';
+import 'package:intime_manager/models/request/emp_info_request.dart';
 import 'package:intime_manager/models/response/generic_response.dart';
 import 'package:intime_manager/models/response/login_response.dart';
 import 'package:intime_manager/models/response/emp_working_info_response.dart';
+import 'package:intime_manager/models/response/dept_in_field_response.dart';
+import 'package:intime_manager/models/request/dept_in_field_request.dart';
+import 'package:intime_manager/models/response/emp_info_response.dart';
+import 'package:intime_manager/models/emp_detail.dart';
 
 class AuthService extends SocketService {
   Future<GenericResponse> requestAuthCode({
@@ -93,5 +99,51 @@ class AuthService extends SocketService {
     );
 
     return EmpWorkingInfoResponse.fromJson(response);
+  }
+
+  Future<EmpInfoResponse> getEmpInfo({
+    required int companyID,
+    required int fieldID,
+    required String enrollID,
+  }) async {
+    final request = EmpInfoRequest(
+      companyID: companyID,
+      fieldID: fieldID,
+      enrollID: enrollID,
+    );
+
+    final response = await sendAndReceive(
+      request: request,
+    );
+
+    return EmpInfoResponse.fromJson(response);
+  }
+
+  Future<GenericResponse> updateEmpInfo({
+    required EmpDetail empDetail,
+  }) async {
+    final request = UpdateEmpInfoRequest(empDetail: empDetail);
+
+    final response = await sendAndReceive(
+      request: request,
+    );
+
+    return GenericResponse.fromJson(response);
+  }
+
+  Future<DeptInFieldResponse> getDeptInField({
+    required int companyID,
+    required int fieldID,
+  }) async {
+    final request = DeptInFieldRequest(
+      companyID: companyID,
+      fieldID: fieldID,
+    );
+
+    final response = await sendAndReceive(
+      request: request,
+    );
+
+    return DeptInFieldResponse.fromJson(response);
   }
 }
