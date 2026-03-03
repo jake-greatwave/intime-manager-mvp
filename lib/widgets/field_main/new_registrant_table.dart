@@ -4,8 +4,15 @@ import 'package:intime_manager/widgets/field_main/new_registrant_row.dart';
 
 class NewRegistrantTable extends StatelessWidget {
   final List<EmpWorkingInfo> items;
+  final String title;
+  final String emptyMessage;
 
-  const NewRegistrantTable({super.key, required this.items});
+  const NewRegistrantTable({
+    super.key,
+    required this.items,
+    this.title = '신규 등록자',
+    this.emptyMessage = '데이터가 없습니다.',
+  });
 
   String _formatDate(String dateStr) {
     if (dateStr.isEmpty) return '-';
@@ -33,13 +40,13 @@ class NewRegistrantTable extends StatelessWidget {
       clipBehavior: Clip.hardEdge,
       child: Column(
         children: [
-          _TableHeader(count: items.length),
+          _TableHeader(title: title, count: items.length),
           _ColumnHeader(),
           Expanded(
             child: items.isEmpty
-                ? const Center(
+                ? Center(
                     child: Text(
-                      '신규 등록자가 없습니다.',
+                      emptyMessage,
                       style: TextStyle(
                         fontSize: 14,
                         color: Color(0xFF99A1AF),
@@ -66,9 +73,10 @@ class NewRegistrantTable extends StatelessWidget {
 }
 
 class _TableHeader extends StatelessWidget {
+  final String title;
   final int count;
 
-  const _TableHeader({required this.count});
+  const _TableHeader({required this.title, required this.count});
 
   @override
   Widget build(BuildContext context) {
@@ -79,9 +87,9 @@ class _TableHeader extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text(
-            '신규 등록자',
-            style: TextStyle(
+          Text(
+            title,
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w900,
               color: Colors.white,

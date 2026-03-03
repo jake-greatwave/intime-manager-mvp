@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intime_manager/models/emp_working_info.dart';
 import 'package:intime_manager/models/field_item.dart';
 import 'package:intime_manager/services/network/auth_service.dart';
 import 'package:intime_manager/widgets/common/bottom_nav_bar.dart';
@@ -27,6 +28,7 @@ class _FieldMainScreenState extends State<FieldMainScreen> {
   late DateTime _selectedDate;
   late FieldItem _fieldItem;
   bool _isLoading = false;
+  StatsTab _selectedTab = StatsTab.unassigned;
 
   @override
   void initState() {
@@ -42,6 +44,42 @@ class _FieldMainScreenState extends State<FieldMainScreen> {
   }
 
   bool _hasValue(String value) => value.trim().isNotEmpty;
+
+  List<EmpWorkingInfo> get _filteredList {
+    final list = _fieldItem.empList;
+    switch (_selectedTab) {
+      case StatsTab.workerIn:
+        return list.where((e) => _hasValue(e.workIn)).toList();
+      case StatsTab.notOut:
+        return list
+            .where((e) => _hasValue(e.workIn) && !_hasValue(e.workOut))
+            .toList();
+      case StatsTab.unassigned:
+        return list.where((e) => e.deptID.trim().isEmpty).toList();
+    }
+  }
+
+  String get _tableTitle {
+    switch (_selectedTab) {
+      case StatsTab.workerIn:
+        return '출근인원';
+      case StatsTab.notOut:
+        return '미퇴근';
+      case StatsTab.unassigned:
+        return '신규 등록자';
+    }
+  }
+
+  String get _emptyMessage {
+    switch (_selectedTab) {
+      case StatsTab.workerIn:
+        return '출근한 인원이 없습니다.';
+      case StatsTab.notOut:
+        return '미퇴근 인원이 없습니다.';
+      case StatsTab.unassigned:
+        return '신규 등록자가 없습니다.';
+    }
+  }
 
   Future<void> _fetchData() async {
     setState(() => _isLoading = true);
@@ -116,11 +154,16 @@ class _FieldMainScreenState extends State<FieldMainScreen> {
                             workerIn: _fieldItem.workerCount,
                             notOut: _fieldItem.notOut,
                             unassigned: _fieldItem.unassigned,
+                            selectedTab: _selectedTab,
+                            onTabChanged: (tab) =>
+                                setState(() => _selectedTab = tab),
                           ),
                           const SizedBox(height: 24),
                           Expanded(
                             child: NewRegistrantTable(
-                              items: _fieldItem.empList,
+                              items: _filteredList,
+                              title: _tableTitle,
+                              emptyMessage: _emptyMessage,
                             ),
                           ),
                         ],
