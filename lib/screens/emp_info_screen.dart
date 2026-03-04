@@ -1,42 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:intime_manager/models/emp_working_info.dart';
 import 'package:intime_manager/models/field_item.dart';
-import 'package:intime_manager/screens/emp_info_screen.dart';
 import 'package:intime_manager/screens/dept_manage_screen.dart';
 import 'package:intime_manager/services/network/auth_service.dart';
 import 'package:intime_manager/widgets/common/bottom_nav_bar.dart';
 import 'package:intime_manager/widgets/field_main/field_main_header.dart';
-import 'package:intime_manager/widgets/field_main/stats_row.dart';
 import 'package:intime_manager/widgets/field_main/new_registrant_table.dart';
 import 'package:intime_manager/widgets/home/calendar_picker.dart';
 
-class FieldMainScreen extends StatefulWidget {
+class EmpInfoScreen extends StatefulWidget {
   final FieldItem fieldItem;
   final DateTime date;
 
-  const FieldMainScreen({
+  const EmpInfoScreen({
     super.key,
     required this.fieldItem,
     required this.date,
   });
 
   @override
-  State<FieldMainScreen> createState() => _FieldMainScreenState();
+  State<EmpInfoScreen> createState() => _EmpInfoScreenState();
 }
 
-class _FieldMainScreenState extends State<FieldMainScreen> {
+class _EmpInfoScreenState extends State<EmpInfoScreen> {
   final AuthService _authService = AuthService();
 
   late DateTime _selectedDate;
   late FieldItem _fieldItem;
   bool _isLoading = false;
-  StatsTab _selectedTab = StatsTab.unassigned;
 
   @override
   void initState() {
     super.initState();
     _selectedDate = widget.date;
     _fieldItem = widget.fieldItem;
+    _fetchData();
   }
 
   String _formatWorkDate(DateTime date) {
@@ -47,41 +45,7 @@ class _FieldMainScreenState extends State<FieldMainScreen> {
 
   bool _hasValue(String value) => value.trim().isNotEmpty;
 
-  List<EmpWorkingInfo> get _filteredList {
-    final list = _fieldItem.empList;
-    switch (_selectedTab) {
-      case StatsTab.workerIn:
-        return list.where((e) => _hasValue(e.workIn)).toList();
-      case StatsTab.notOut:
-        return list
-            .where((e) => _hasValue(e.workIn) && !_hasValue(e.workOut))
-            .toList();
-      case StatsTab.unassigned:
-        return list.where((e) => e.deptID.trim().isEmpty).toList();
-    }
-  }
-
-  String get _tableTitle {
-    switch (_selectedTab) {
-      case StatsTab.workerIn:
-        return '출근인원';
-      case StatsTab.notOut:
-        return '미퇴근';
-      case StatsTab.unassigned:
-        return '신규 등록자';
-    }
-  }
-
-  String get _emptyMessage {
-    switch (_selectedTab) {
-      case StatsTab.workerIn:
-        return '출근한 인원이 없습니다.';
-      case StatsTab.notOut:
-        return '미퇴근 인원이 없습니다.';
-      case StatsTab.unassigned:
-        return '신규 등록자가 없습니다.';
-    }
-  }
+  List<EmpWorkingInfo> get _allEmps => _fieldItem.empList;
 
   Future<void> _fetchData() async {
     setState(() => _isLoading = true);
@@ -150,27 +114,12 @@ class _FieldMainScreenState extends State<FieldMainScreen> {
                     )
                   : Padding(
                       padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
-                      child: Column(
-                        children: [
-                          StatsRow(
-                            workerIn: _fieldItem.workerCount,
-                            notOut: _fieldItem.notOut,
-                            unassigned: _fieldItem.unassigned,
-                            selectedTab: _selectedTab,
-                            onTabChanged: (tab) =>
-                                setState(() => _selectedTab = tab),
-                          ),
-                          const SizedBox(height: 24),
-                          Expanded(
-                            child: NewRegistrantTable(
-                              items: _filteredList,
-                              fieldItem: _fieldItem,
-                              title: _tableTitle,
-                              emptyMessage: _emptyMessage,
-                              onEmpDeleted: _fetchData,
-                            ),
-                          ),
-                        ],
+                      child: NewRegistrantTable(
+                        items: _allEmps,
+                        fieldItem: _fieldItem,
+                        title: '등록 직원 조회',
+                        emptyMessage: '등록된 직원이 없습니다.',
+                        onEmpDeleted: _fetchData,
                       ),
                     ),
             ),
@@ -178,23 +127,16 @@ class _FieldMainScreenState extends State<FieldMainScreen> {
         ),
       ),
       bottomNavigationBar: BottomNavBar(
-        selectedTab: FieldTab.fieldMain,
+        selectedTab: FieldTab.empInfo,
         onTap: (tab) {
           if (tab == FieldTab.home) {
             Navigator.of(context).pop();
+          } else if (tab == FieldTab.fieldMain) {
+            Navigator.of(context).pop();
           } else if (tab == FieldTab.deptManage) {
-            Navigator.of(context).push(
+            Navigator.of(context).pushReplacement(
               MaterialPageRoute(
                 builder: (_) => DeptManageScreen(
-                  fieldItem: _fieldItem,
-                  date: _selectedDate,
-                ),
-              ),
-            );
-          } else if (tab == FieldTab.empInfo) {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => EmpInfoScreen(
                   fieldItem: _fieldItem,
                   date: _selectedDate,
                 ),

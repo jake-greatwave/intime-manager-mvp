@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:intime_manager/models/dept.dart';
-import 'package:intime_manager/models/type_of_work.dart';
 import 'package:intime_manager/widgets/dept_manage/dept_table_row.dart';
 
 class DeptTable extends StatelessWidget {
-  final List<TypeOfWork> typeOfWorks;
   final List<Dept> depts;
   final int? selectedIndex;
   final ValueChanged<int>? onRowTap;
 
   const DeptTable({
     super.key,
-    required this.typeOfWorks,
     required this.depts,
     this.selectedIndex,
     this.onRowTap,
@@ -53,10 +50,10 @@ class DeptTable extends StatelessWidget {
           else
             ...List.generate(depts.length, (i) {
               final dept = depts[i];
-              final tow =
-                  i < typeOfWorks.length ? typeOfWorks[i].typeOfWorkName : '-';
               return DeptTableRow(
-                typeOfWork: tow,
+                typeOfWork: dept.typeOfWorkName.isNotEmpty
+                    ? dept.typeOfWorkName
+                    : '-',
                 deptName: dept.deptName,
                 isEven: i.isEven,
                 isSelected: selectedIndex == i,

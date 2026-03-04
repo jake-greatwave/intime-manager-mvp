@@ -1,7 +1,7 @@
+import 'package:intime_manager/screens/emp_info_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intime_manager/models/dept.dart';
 import 'package:intime_manager/models/field_item.dart';
-import 'package:intime_manager/models/type_of_work.dart';
 import 'package:intime_manager/services/network/auth_service.dart';
 import 'package:intime_manager/widgets/common/bottom_nav_bar.dart';
 import 'package:intime_manager/widgets/dept_manage/dept_action_buttons.dart';
@@ -28,7 +28,6 @@ class _DeptManageScreenState extends State<DeptManageScreen> {
   final AuthService _authService = AuthService();
 
   bool _isLoading = true;
-  List<TypeOfWork> _typeOfWorks = [];
   List<Dept> _depts = [];
   int? _selectedIndex;
   String? _errorMessage;
@@ -46,13 +45,21 @@ class _DeptManageScreenState extends State<DeptManageScreen> {
     });
 
     try {
+      debugPrint(
+        '[DeptInField REQ] CompanyID=${widget.fieldItem.companyID} '
+        'FieldID=${widget.fieldItem.fieldID}',
+      );
       final response = await _authService.getDeptInField(
         companyID: widget.fieldItem.companyID,
         fieldID: widget.fieldItem.fieldID,
       );
+      debugPrint(
+        '[DeptInField RES] status=${response.status} '
+        'message=${response.message} '
+        'deptCount=${response.deptInField.length}',
+      );
       if (!mounted) return;
       setState(() {
-        _typeOfWorks = response.typeOfWork;
         _depts = response.deptInField;
         _selectedIndex = null;
         _isLoading = false;
@@ -113,7 +120,6 @@ class _DeptManageScreenState extends State<DeptManageScreen> {
                               const DeptSectionTitle(),
                               const SizedBox(height: 16),
                               DeptTable(
-                                typeOfWorks: _typeOfWorks,
                                 depts: _depts,
                                 selectedIndex: _selectedIndex,
                                 onRowTap: (i) => setState(() {
@@ -136,6 +142,15 @@ class _DeptManageScreenState extends State<DeptManageScreen> {
               onNavTap: (tab) {
                 if (tab == FieldTab.home || tab == FieldTab.fieldMain) {
                   Navigator.of(context).pop();
+                } else if (tab == FieldTab.empInfo) {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (_) => EmpInfoScreen(
+                        fieldItem: widget.fieldItem,
+                        date: widget.date,
+                      ),
+                    ),
+                  );
                 }
               },
             ),

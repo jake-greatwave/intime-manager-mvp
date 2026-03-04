@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:intime_manager/network/socket/socket_service.dart';
 import 'package:intime_manager/models/request/auth_request.dart';
 import 'package:intime_manager/models/request/verify_request.dart';
@@ -144,6 +145,8 @@ class AuthService extends SocketService {
     final response = await sendAndReceive(
       request: request,
     );
+
+    debugPrint('[DeptInField RAW] $response');
 
     return DeptInFieldResponse.fromJson(response);
   }
