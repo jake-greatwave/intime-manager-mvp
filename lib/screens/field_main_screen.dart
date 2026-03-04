@@ -165,6 +165,7 @@ class _FieldMainScreenState extends State<FieldMainScreen> {
                               fieldItem: _fieldItem,
                               title: _tableTitle,
                               emptyMessage: _emptyMessage,
+                              onEmpDeleted: _fetchData,
                             ),
                           ),
                         ],

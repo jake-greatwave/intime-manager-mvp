@@ -11,6 +11,7 @@ import 'package:intime_manager/models/response/login_response.dart';
 import 'package:intime_manager/models/response/emp_working_info_response.dart';
 import 'package:intime_manager/models/response/dept_in_field_response.dart';
 import 'package:intime_manager/models/request/dept_in_field_request.dart';
+import 'package:intime_manager/models/request/quit_emp_request.dart';
 import 'package:intime_manager/models/response/emp_info_response.dart';
 import 'package:intime_manager/models/emp_detail.dart';
 
@@ -145,5 +146,23 @@ class AuthService extends SocketService {
     );
 
     return DeptInFieldResponse.fromJson(response);
+  }
+
+  Future<GenericResponse> quitEmp({
+    required int companyID,
+    required int fieldID,
+    required String enrollID,
+  }) async {
+    final request = QuitEmpRequest(
+      companyID: companyID,
+      fieldID: fieldID,
+      enrollID: enrollID,
+    );
+
+    final response = await sendAndReceive(
+      request: request,
+    );
+
+    return GenericResponse.fromJson(response);
   }
 }

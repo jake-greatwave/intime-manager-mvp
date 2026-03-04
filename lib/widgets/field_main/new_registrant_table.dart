@@ -9,6 +9,7 @@ class NewRegistrantTable extends StatelessWidget {
   final FieldItem fieldItem;
   final String title;
   final String emptyMessage;
+  final VoidCallback? onEmpDeleted;
 
   const NewRegistrantTable({
     super.key,
@@ -16,6 +17,7 @@ class NewRegistrantTable extends StatelessWidget {
     required this.fieldItem,
     this.title = '신규 등록자',
     this.emptyMessage = '데이터가 없습니다.',
+    this.onEmpDeleted,
   });
 
   String _formatDate(String dateStr) {
@@ -66,14 +68,18 @@ class NewRegistrantTable extends StatelessWidget {
                         deptName:
                             item.deptName.isEmpty ? '미배정' : item.deptName,
                         lastAuthLog: _formatDate(item.lastAuthLog),
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => EmpDetailScreen(
-                              emp: item,
-                              fieldItem: fieldItem,
+                        onTap: () async {
+                          final deleted =
+                              await Navigator.of(context).push<bool>(
+                            MaterialPageRoute(
+                              builder: (_) => EmpDetailScreen(
+                                emp: item,
+                                fieldItem: fieldItem,
+                              ),
                             ),
-                          ),
-                        ),
+                          );
+                          if (deleted == true) onEmpDeleted?.call();
+                        },
                       );
                     },
                   ),

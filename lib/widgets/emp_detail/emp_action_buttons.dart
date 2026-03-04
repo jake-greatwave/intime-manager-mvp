@@ -4,12 +4,14 @@ class EmpActionButtons extends StatelessWidget {
   final VoidCallback? onSave;
   final VoidCallback? onDelete;
   final bool isSaving;
+  final bool isDeleting;
 
   const EmpActionButtons({
     super.key,
     this.onSave,
     this.onDelete,
     this.isSaving = false,
+    this.isDeleting = false,
   });
 
   @override
@@ -27,7 +29,7 @@ class EmpActionButtons extends StatelessWidget {
         children: [
           _SaveButton(onTap: onSave, isSaving: isSaving),
           const SizedBox(height: 12),
-          _DeleteButton(onTap: onDelete),
+          _DeleteButton(onTap: onDelete, isDeleting: isDeleting),
         ],
       ),
     );
@@ -99,35 +101,53 @@ class _SaveButton extends StatelessWidget {
 
 class _DeleteButton extends StatelessWidget {
   final VoidCallback? onTap;
+  final bool isDeleting;
 
-  const _DeleteButton({this.onTap});
+  const _DeleteButton({this.onTap, required this.isDeleting});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
         height: 56,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFEF4444), width: 2),
+          border: Border.all(
+            color: isDeleting
+                ? const Color(0xFFEF4444).withValues(alpha: 0.4)
+                : const Color(0xFFEF4444),
+            width: 2,
+          ),
         ),
-        child: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.delete_outline, color: Color(0xFFEF4444), size: 20),
-            SizedBox(width: 12),
-            Text(
-              '직원 삭제',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFFEF4444),
-                letterSpacing: 0.07,
-              ),
-            ),
-          ],
+        child: Center(
+          child: isDeleting
+              ? const SizedBox(
+                  width: 22,
+                  height: 22,
+                  child: CircularProgressIndicator(
+                    color: Color(0xFFEF4444),
+                    strokeWidth: 2.5,
+                  ),
+                )
+              : const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.delete_outline, color: Color(0xFFEF4444), size: 20),
+                    SizedBox(width: 12),
+                    Text(
+                      '직원 삭제',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFFEF4444),
+                        letterSpacing: 0.07,
+                      ),
+                    ),
+                  ],
+                ),
         ),
       ),
     );

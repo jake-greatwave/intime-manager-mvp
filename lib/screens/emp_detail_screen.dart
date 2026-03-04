@@ -4,6 +4,7 @@ import 'package:intime_manager/models/emp_detail.dart';
 import 'package:intime_manager/models/emp_working_info.dart';
 import 'package:intime_manager/models/field_item.dart';
 import 'package:intime_manager/services/network/auth_service.dart';
+import 'package:intime_manager/widgets/emp_detail/delete_confirm_dialog.dart';
 import 'package:intime_manager/widgets/emp_detail/dept_picker_sheet.dart';
 import 'package:intime_manager/widgets/emp_detail/emp_avatar.dart';
 import 'package:intime_manager/widgets/emp_detail/emp_info_form.dart';
@@ -30,6 +31,7 @@ class _EmpDetailScreenState extends State<EmpDetailScreen> {
 
   bool _isLoading = true;
   bool _isSaving = false;
+  bool _isDeleting = false;
   EmpDetail? _empDetail;
   List<Dept> _deptList = [];
   int _selectedDeptID = 0;
@@ -198,6 +200,42 @@ class _EmpDetailScreenState extends State<EmpDetailScreen> {
     }
   }
 
+  Future<void> _deleteEmp() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      barrierColor: Colors.black54,
+      builder: (_) => const DeleteConfirmDialog(),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _isDeleting = true);
+
+    try {
+      final response = await _authService.quitEmp(
+        companyID: widget.fieldItem.companyID,
+        fieldID: widget.fieldItem.fieldID,
+        enrollID: widget.emp.enrollID,
+      );
+
+      if (!mounted) return;
+
+      if (response.status == 'SUCCESS') {
+        Navigator.of(context).pop(true);
+      } else {
+        _showSnackBar(
+          response.message.isNotEmpty ? response.message : '삭제에 실패했습니다.',
+          isError: true,
+        );
+        setState(() => _isDeleting = false);
+      }
+    } catch (e) {
+      if (!mounted) return;
+      _showSnackBar('네트워크 오류가 발생했습니다.', isError: true);
+      setState(() => _isDeleting = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -223,7 +261,9 @@ class _EmpDetailScreenState extends State<EmpDetailScreen> {
             if (!_isLoading && _errorMessage == null)
               EmpActionButtons(
                 onSave: _isSaving ? null : _updateEmpInfo,
+                onDelete: (_isSaving || _isDeleting) ? null : _deleteEmp,
                 isSaving: _isSaving,
+                isDeleting: _isDeleting,
               ),
           ],
         ),
