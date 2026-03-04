@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intime_manager/models/dept.dart';
 import 'package:intime_manager/models/emp_detail.dart';
@@ -212,10 +213,20 @@ class _EmpDetailScreenState extends State<EmpDetailScreen> {
     setState(() => _isDeleting = true);
 
     try {
+      debugPrint(
+        '[QuitEmp REQ] CompanyID=${widget.fieldItem.companyID} '
+        'FieldID=${widget.fieldItem.fieldID} '
+        'EnrollID=${widget.emp.enrollID}',
+      );
+
       final response = await _authService.quitEmp(
         companyID: widget.fieldItem.companyID,
         fieldID: widget.fieldItem.fieldID,
         enrollID: widget.emp.enrollID,
+      );
+
+      debugPrint(
+        '[QuitEmp RES] status=${response.status} message=${response.message}',
       );
 
       if (!mounted) return;
