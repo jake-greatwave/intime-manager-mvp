@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intime_manager/models/emp_working_info.dart';
 import 'package:intime_manager/models/field_item.dart';
+import 'package:intime_manager/screens/dept_manage_screen.dart';
 import 'package:intime_manager/services/network/auth_service.dart';
 import 'package:intime_manager/widgets/common/bottom_nav_bar.dart';
 import 'package:intime_manager/widgets/field_main/field_main_header.dart';
@@ -178,7 +179,18 @@ class _FieldMainScreenState extends State<FieldMainScreen> {
       bottomNavigationBar: BottomNavBar(
         selectedTab: FieldTab.fieldMain,
         onTap: (tab) {
-          if (tab == FieldTab.home) Navigator.of(context).pop();
+          if (tab == FieldTab.home) {
+            Navigator.of(context).pop();
+          } else if (tab == FieldTab.deptManage) {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => DeptManageScreen(
+                  fieldItem: _fieldItem,
+                  date: _selectedDate,
+                ),
+              ),
+            );
+          }
         },
       ),
     );

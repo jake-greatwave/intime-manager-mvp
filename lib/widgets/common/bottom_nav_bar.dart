@@ -52,7 +52,7 @@ class BottomNavBar extends StatelessWidget {
                 icon: Icons.people,
                 label: '부서관리',
                 isSelected: selectedTab == FieldTab.deptManage,
-                isDisabled: true,
+                isDisabled: false,
                 onTap: () => onTap?.call(FieldTab.deptManage),
               ),
               _NavItem(
