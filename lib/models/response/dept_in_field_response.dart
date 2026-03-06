@@ -18,11 +18,19 @@ class DeptInFieldResponse implements SocketResponse {
   });
 
   factory DeptInFieldResponse.fromJson(Map<String, dynamic> json) {
+    final towList = _parseTypeOfWork(json['TypeOfWork'] ?? json['typeOfWork']);
+    final towMap = {for (final t in towList) t.typeOfWorkID: t.typeOfWorkName};
+    final rawDepts = _parseDeptList(json['DeptInField'] ?? json['deptInField']);
+    final depts = rawDepts.map((d) {
+      final name = towMap[d.typeOfWorkID] ?? '';
+      return name.isNotEmpty ? d.copyWithTypeOfWorkName(name) : d;
+    }).toList();
+
     return DeptInFieldResponse(
       status: (json['status'] as String?) ?? '',
       message: (json['message'] as String?) ?? '',
-      typeOfWork: _parseTypeOfWork(json['TypeOfWork'] ?? json['typeOfWork']),
-      deptInField: _parseDeptList(json['DeptInField'] ?? json['deptInField']),
+      typeOfWork: towList,
+      deptInField: depts,
     );
   }
 

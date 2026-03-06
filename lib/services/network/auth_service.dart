@@ -1,4 +1,7 @@
 import 'package:flutter/foundation.dart';
+import 'package:intime_manager/models/request/add_dept_request.dart';
+import 'package:intime_manager/models/request/delete_dept_request.dart';
+import 'package:intime_manager/models/request/update_dept_request.dart';
 import 'package:intime_manager/network/socket/socket_service.dart';
 import 'package:intime_manager/models/request/auth_request.dart';
 import 'package:intime_manager/models/request/verify_request.dart';
@@ -182,6 +185,86 @@ class AuthService extends SocketService {
 
     final response = await sendAndReceive(
       request: request,
+    );
+
+    return GenericResponse.fromJson(response);
+  }
+
+  Future<GenericResponse> updateDept({
+    required int companyID,
+    required int fieldID,
+    required int deptID,
+    required int typeOfWorkID,
+    required String deptName,
+  }) async {
+    final request = UpdateDeptRequest(
+      companyID: companyID,
+      fieldID: fieldID,
+      deptID: deptID,
+      typeOfWorkID: typeOfWorkID,
+      deptName: deptName,
+    );
+
+    debugPrint(
+      '[UpdateDept REQ] CompanyID=$companyID FieldID=$fieldID '
+      'DeptID=$deptID TypeOfWorkID=$typeOfWorkID DeptName=$deptName',
+    );
+
+    final response = await sendAndReceive(request: request);
+
+    debugPrint(
+      '[UpdateDept RES] status=${response['status']} message=${response['message']}',
+    );
+
+    return GenericResponse.fromJson(response);
+  }
+
+  Future<GenericResponse> addDept({
+    required int companyID,
+    required int fieldID,
+    required String deptName,
+    required int typeOfWorkID,
+  }) async {
+    final request = AddDeptRequest(
+      companyID: companyID,
+      fieldID: fieldID,
+      deptName: deptName,
+      typeOfWorkID: typeOfWorkID,
+    );
+
+    debugPrint(
+      '[AddDept REQ] CompanyID=$companyID FieldID=$fieldID '
+      'TypeOfWorkID=$typeOfWorkID DeptName=$deptName',
+    );
+
+    final response = await sendAndReceive(request: request);
+
+    debugPrint(
+      '[AddDept RES] status=${response['status']} message=${response['message']}',
+    );
+
+    return GenericResponse.fromJson(response);
+  }
+
+  Future<GenericResponse> deleteDept({
+    required int companyID,
+    required int fieldID,
+    required int deptID,
+  }) async {
+    final request = DeleteDeptRequest(
+      companyID: companyID,
+      fieldID: fieldID,
+      deptID: deptID,
+    );
+
+    debugPrint(
+      '[DeleteDept REQ] CompanyID=$companyID FieldID=$fieldID DeptID=$deptID',
+    );
+
+    final response = await sendAndReceive(request: request);
+
+    debugPrint(
+      '[DeleteDept RES] status=${response['status']} message=${response['message']}',
     );
 
     return GenericResponse.fromJson(response);

@@ -1,7 +1,11 @@
 import 'package:intime_manager/screens/emp_info_screen.dart';
+import 'package:intime_manager/widgets/emp_detail/delete_confirm_dialog.dart';
+import 'package:intime_manager/screens/dept_add_screen.dart';
+import 'package:intime_manager/screens/dept_edit_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intime_manager/models/dept.dart';
 import 'package:intime_manager/models/field_item.dart';
+import 'package:intime_manager/models/type_of_work.dart';
 import 'package:intime_manager/services/network/auth_service.dart';
 import 'package:intime_manager/widgets/common/bottom_nav_bar.dart';
 import 'package:intime_manager/widgets/dept_manage/dept_action_buttons.dart';
@@ -29,6 +33,7 @@ class _DeptManageScreenState extends State<DeptManageScreen> {
 
   bool _isLoading = true;
   List<Dept> _depts = [];
+  List<TypeOfWork> _typeOfWorks = [];
   int? _selectedIndex;
   String? _errorMessage;
 
@@ -61,6 +66,7 @@ class _DeptManageScreenState extends State<DeptManageScreen> {
       if (!mounted) return;
       setState(() {
         _depts = response.deptInField;
+        _typeOfWorks = response.typeOfWork;
         _selectedIndex = null;
         _isLoading = false;
       });
@@ -136,9 +142,85 @@ class _DeptManageScreenState extends State<DeptManageScreen> {
             ),
             _DeptBottomArea(
               hasSelection: _hasSelection,
-              onAdd: () {},
-              onEdit: _hasSelection ? () {} : null,
-              onDelete: _hasSelection ? () {} : null,
+              onAdd: () async {
+                final added = await Navigator.of(context).push<bool>(
+                  MaterialPageRoute(
+                    builder: (_) => DeptAddScreen(
+                      fieldItem: widget.fieldItem,
+                      typeOfWorkList: _typeOfWorks,
+                    ),
+                  ),
+                );
+                if (added == true) _fetchDepts();
+              },
+              onEdit: _hasSelection
+                  ? () async {
+                      final dept = _depts[_selectedIndex!];
+                      final updated = await Navigator.of(context).push<bool>(
+                        MaterialPageRoute(
+                          builder: (_) => DeptEditScreen(
+                            fieldItem: widget.fieldItem,
+                            dept: dept,
+                            typeOfWorkList: _typeOfWorks,
+                          ),
+                        ),
+                      );
+                      if (updated == true) _fetchDepts();
+                    }
+                  : null,
+              onDelete: _hasSelection
+                  ? () async {
+                      final dept = _depts[_selectedIndex!];
+                      final messenger = ScaffoldMessenger.of(context);
+                      final confirmed = await showDialog<bool>(
+                        context: context,
+                        barrierColor: Colors.black54,
+                        builder: (_) => DeleteConfirmDialog(
+                          title: '부서 삭제',
+                          message:
+                              '삭제한 부서는 되돌릴 수 없습니다.\n정말로 삭제하시겠습니까?',
+                        ),
+                      );
+                      if (confirmed != true || !mounted) return;
+                      try {
+                        final response = await _authService.deleteDept(
+                          companyID: widget.fieldItem.companyID,
+                          fieldID: widget.fieldItem.fieldID,
+                          deptID: dept.deptID,
+                        );
+                        if (!mounted) return;
+                        if (response.status == 'SUCCESS') {
+                          _fetchDepts();
+                        } else {
+                          messenger.showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                response.message.isNotEmpty
+                                    ? response.message
+                                    : '삭제에 실패했습니다.',
+                              ),
+                              backgroundColor: const Color(0xFFEF4444),
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12)),
+                              margin:
+                                  const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                            ),
+                          );
+                        }
+                      } catch (_) {
+                        if (!mounted) return;
+                        messenger.showSnackBar(
+                          const SnackBar(
+                            content: Text('네트워크 오류가 발생했습니다.'),
+                            backgroundColor: Color(0xFFEF4444),
+                            behavior: SnackBarBehavior.floating,
+                            margin: EdgeInsets.fromLTRB(16, 0, 16, 16),
+                          ),
+                        );
+                      }
+                    }
+                  : null,
               onNavTap: (tab) {
                 if (tab == FieldTab.home || tab == FieldTab.fieldMain) {
                   Navigator.of(context).pop();

@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 
 class DeleteConfirmDialog extends StatelessWidget {
-  const DeleteConfirmDialog({super.key});
+  final String title;
+  final String message;
+
+  const DeleteConfirmDialog({
+    super.key,
+    this.title = '직원 삭제',
+    this.message = '삭제한 데이터는 되돌릴 수 없습니다.\n정말로 삭제하시겠습니까?',
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -27,9 +34,9 @@ class DeleteConfirmDialog extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
-              '직원 삭제',
-              style: TextStyle(
+            Text(
+              title,
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w900,
                 color: Color(0xFF101828),
@@ -37,8 +44,8 @@ class DeleteConfirmDialog extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-            const Text(
-              '삭제한 데이터는 되돌릴 수 없습니다.\n정말로 삭제하시겠습니까?',
+            Text(
+              message,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 15,
