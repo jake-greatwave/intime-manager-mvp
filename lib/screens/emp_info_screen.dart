@@ -120,6 +120,7 @@ class _EmpInfoScreenState extends State<EmpInfoScreen> {
                         title: '등록 직원 조회',
                         emptyMessage: '등록된 직원이 없습니다.',
                         onEmpDeleted: _fetchData,
+                        onRefresh: _fetchData,
                       ),
                     ),
             ),

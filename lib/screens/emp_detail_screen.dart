@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intime_manager/models/dept.dart';
 import 'package:intime_manager/models/emp_detail.dart';
@@ -118,6 +117,8 @@ class _EmpDetailScreenState extends State<EmpDetailScreen> {
           _selectedDeptID = updated.deptID;
         });
         _showSnackBar('수정이 완료되었습니다.');
+        await Future.delayed(const Duration(milliseconds: 800));
+        if (mounted) Navigator.of(context).pop(true);
       } else {
         _showSnackBar(
           response.message.isNotEmpty ? response.message : '수정에 실패했습니다.',
@@ -288,7 +289,10 @@ class _EmpDetailScreenState extends State<EmpDetailScreen> {
       padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
       child: Column(
         children: [
-          Center(child: EmpAvatar(nameChar: _nameChar())),
+          Center(child: EmpAvatar(
+            nameChar: _nameChar(),
+            base64Image: detail.base64StringImage,
+          )),
           const SizedBox(height: 24),
           EmpInfoForm(
             enrollID: detail.phoneNum.isNotEmpty

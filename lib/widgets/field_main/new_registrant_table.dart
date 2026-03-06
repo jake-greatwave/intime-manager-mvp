@@ -10,6 +10,7 @@ class NewRegistrantTable extends StatelessWidget {
   final String title;
   final String emptyMessage;
   final VoidCallback? onEmpDeleted;
+  final Future<void> Function()? onRefresh;
 
   const NewRegistrantTable({
     super.key,
@@ -18,6 +19,7 @@ class NewRegistrantTable extends StatelessWidget {
     this.title = '신규 등록자',
     this.emptyMessage = '데이터가 없습니다.',
     this.onEmpDeleted,
+    this.onRefresh,
   });
 
   String _formatDate(String dateStr) {
@@ -59,29 +61,33 @@ class NewRegistrantTable extends StatelessWidget {
                       ),
                     ),
                   )
-                : ListView.builder(
-                    itemCount: items.length,
-                    itemBuilder: (context, i) {
-                      final item = items[i];
-                      return NewRegistrantRow(
-                        enrollID: item.enrollID,
-                        deptName:
-                            item.deptName.isEmpty ? '미배정' : item.deptName,
-                        lastAuthLog: _formatDate(item.lastAuthLog),
-                        onTap: () async {
-                          final deleted =
-                              await Navigator.of(context).push<bool>(
-                            MaterialPageRoute(
-                              builder: (_) => EmpDetailScreen(
-                                emp: item,
-                                fieldItem: fieldItem,
+                : RefreshIndicator(
+                    color: const Color(0xFF00A63E),
+                    onRefresh: onRefresh ?? () async {},
+                    child: ListView.builder(
+                      itemCount: items.length,
+                      itemBuilder: (context, i) {
+                        final item = items[i];
+                        return NewRegistrantRow(
+                          enrollID: item.enrollID,
+                          deptName:
+                              item.deptName.isEmpty ? '미배정' : item.deptName,
+                          lastAuthLog: _formatDate(item.lastAuthLog),
+                          onTap: () async {
+                            final deleted =
+                                await Navigator.of(context).push<bool>(
+                              MaterialPageRoute(
+                                builder: (_) => EmpDetailScreen(
+                                  emp: item,
+                                  fieldItem: fieldItem,
+                                ),
                               ),
-                            ),
-                          );
-                          if (deleted == true) onEmpDeleted?.call();
-                        },
-                      );
-                    },
+                            );
+                            if (deleted == true) onEmpDeleted?.call();
+                          },
+                        );
+                      },
+                    ),
                   ),
           ),
         ],

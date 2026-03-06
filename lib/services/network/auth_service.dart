@@ -96,9 +96,21 @@ class AuthService extends SocketService {
       workDate: workDate,
     );
 
+    debugPrint(
+      '[WorkInfo REQ] CompanyID=$companyID FieldID=$fieldID '
+      'FieldCode=$fieldCode WorkDate=$workDate',
+    );
+
     final response = await sendAndReceive(
       request: request,
     );
+
+    debugPrint(
+      '[WorkInfo RES] status=${response['status']} '
+      'message=${response['message']} '
+      'empCount=${(response['EmpWorkingInfo'] as List?)?.length ?? 0}',
+    );
+    debugPrint('[WorkInfo RAW] $response');
 
     return EmpWorkingInfoResponse.fromJson(response);
   }
@@ -114,9 +126,15 @@ class AuthService extends SocketService {
       enrollID: enrollID,
     );
 
+    debugPrint(
+      '[EmpInfo REQ] CompanyID=$companyID FieldID=$fieldID EnrollID=$enrollID',
+    );
+
     final response = await sendAndReceive(
       request: request,
     );
+
+    debugPrint('[EmpInfo RAW] $response');
 
     return EmpInfoResponse.fromJson(response);
   }

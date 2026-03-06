@@ -1,12 +1,21 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 
 class EmpAvatar extends StatelessWidget {
   final String nameChar;
+  final String? base64Image;
 
-  const EmpAvatar({super.key, required this.nameChar});
+  const EmpAvatar({
+    super.key,
+    required this.nameChar,
+    this.base64Image,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final hasImage =
+        base64Image != null && base64Image!.trim().isNotEmpty;
+
     return SizedBox(
       width: 128,
       height: 128,
@@ -21,25 +30,14 @@ class EmpAvatar extends StatelessWidget {
               color: const Color(0xFFF9FAFB),
             ),
             padding: const EdgeInsets.all(4),
-            child: Container(
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Color(0xFF00A63E), Color(0xFF008F36)],
-                ),
-              ),
-              child: Center(
-                child: Text(
-                  nameChar,
-                  style: const TextStyle(
-                    fontSize: 48,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
+            child: ClipOval(
+              child: hasImage
+                  ? Image.memory(
+                      base64Decode(base64Image!.trim()),
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => _DefaultAvatar(nameChar),
+                    )
+                  : _DefaultAvatar(nameChar),
             ),
           ),
           Positioned(
@@ -67,6 +65,35 @@ class EmpAvatar extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _DefaultAvatar extends StatelessWidget {
+  final String nameChar;
+
+  const _DefaultAvatar(this.nameChar);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFF00A63E), Color(0xFF008F36)],
+        ),
+      ),
+      child: Center(
+        child: Text(
+          nameChar,
+          style: const TextStyle(
+            fontSize: 48,
+            fontWeight: FontWeight.w900,
+            color: Colors.white,
+          ),
+        ),
       ),
     );
   }

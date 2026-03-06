@@ -39,6 +39,8 @@ class NewRegistrantRow extends StatelessWidget {
               width: 146,
               child: Text(
                 enrollID,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.normal,
@@ -51,6 +53,8 @@ class NewRegistrantRow extends StatelessWidget {
               width: 88,
               child: Text(
                 deptName,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 13,
