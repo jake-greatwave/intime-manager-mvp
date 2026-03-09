@@ -1,3 +1,4 @@
+import 'package:intime_manager/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intime_manager/models/field_item.dart';
 import 'package:intime_manager/models/response/login_response.dart';
@@ -152,7 +153,13 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            HomeHeader(date: _selectedDate, onDateTap: _onDateTap),
+            HomeHeader(
+              date: _selectedDate,
+              onDateTap: _onDateTap,
+              onSettingsTap: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const SettingsScreen()),
+              ),
+            ),
             Expanded(
               child: RefreshIndicator(
                 color: const Color(0xFF00A63E),

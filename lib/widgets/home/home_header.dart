@@ -3,8 +3,14 @@ import 'package:flutter/material.dart';
 class HomeHeader extends StatelessWidget {
   final DateTime date;
   final VoidCallback? onDateTap;
+  final VoidCallback? onSettingsTap;
 
-  const HomeHeader({super.key, required this.date, this.onDateTap});
+  const HomeHeader({
+    super.key,
+    required this.date,
+    this.onDateTap,
+    this.onSettingsTap,
+  });
 
   String _weekdayLabel() {
     const labels = ['월', '화', '수', '목', '금', '토', '일'];
@@ -23,14 +29,31 @@ class HomeHeader extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            '현장 선택',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w900,
-              color: Color(0xFF99A1AF),
-              letterSpacing: -0.5,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                '현장 선택',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w900,
+                  color: Color(0xFF99A1AF),
+                  letterSpacing: -0.5,
+                ),
+              ),
+              GestureDetector(
+                onTap: onSettingsTap,
+                behavior: HitTestBehavior.opaque,
+                child: const Padding(
+                  padding: EdgeInsets.all(4),
+                  child: Icon(
+                    Icons.settings_outlined,
+                    color: Color(0xFF6A7282),
+                    size: 26,
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 8),
           GestureDetector(
